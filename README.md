@@ -23,7 +23,7 @@ pacman -S stow
 First, check out the dotfiles repo in your $HOME directory using git
 
 ```
-$ git clone git@github.com/Shtrongernman/dotfiles.git
+$ git clone https://github.com/Shtrongernman/dotfiles.git
 $ cd dotfiles
 ```
 
