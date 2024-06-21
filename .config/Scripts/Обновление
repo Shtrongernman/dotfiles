@@ -1,0 +1,44 @@
+#!/bin/bash 
+## Updates package lists
+echo "'" | sudo -S apt-get update #пароль в кавычках заменить на свой 
+## Updates packages and libraries
+sudo apt upgrade -y;
+## Removes unneeded packages
+sudo apt-get -y --purge autoremove;
+KEEP=2
+APT_OPTS=
+while [ ! -z "$1" ]; do
+	case "$1" in
+		--keep)
+			# User specified the number of kernels to keep
+			KEEP="$2"
+			shift 2
+		;;
+		*)
+			APT_OPTS="$APT_OPTS $1"
+			shift 1
+		;;
+	esac
+done
+
+# Build our list of kernel packages to purge
+CANDIDATES=$(ls -tr /boot/vmlinuz-* | head -n -${KEEP} | grep -v "$(uname -r)$" | cut -d- -f2- | awk '{print "linux-image-" $0 " linux-headers-" $0}' )
+for c in $CANDIDATES; do
+	dpkg-query -s "$c" >/dev/null 2>&1 && PURGE="$PURGE $c"
+done
+
+if [ -z "$PURGE" ]; then
+	echo "No kernels are eligible for removal"
+fi
+sudo apt $APT_OPTS remove -y --purge $PURGE;
+## Removes unused config files
+sudo deborphan -n --find-config | xargs sudo apt-get -y --purge autoremove; 
+## Removes package files that can no longer be downloaded and everything except 
+# the lock file in /var/cache/apt/archives, including directories.
+sudo apt-get -y autoclean; sudo apt-get -y clean;
+flatpak update -y
+
+#systemctl poweroff;
+
+echo "~КОНЕЦ~"
+## End of script

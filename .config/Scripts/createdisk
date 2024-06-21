@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Prompt the user to enter the name and size of the disk image
+read -p "Enter the name of the disk image: " image_name
+read -p "Enter the size of the disk image (in GB): " image_size
+
+# Create the disk image with the specified name and size
+qemu-img create -f qcow2 -o preallocation=off "${image_name}.qcow2" "${image_size}G"
+
+# Verify that the disk image was created successfully
+if [ $? -eq 0 ]; then
+    echo "Disk image created successfully: ${image_name}.qcow2"
+else
+    echo "Failed to create disk image: ${image_name}.qcow2"
+fi

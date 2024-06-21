@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Обновление
+Comment=
+Exec=xterm -hold '/home/leo/Documents/Обновление'
+Icon=system-software-update
+Path=
+#Terminal=true
+StartupNotify=false

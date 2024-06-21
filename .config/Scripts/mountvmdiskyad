@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Define the YAD form
+yad_form() {
+    yad --form \
+    --title="Mount Disk Image" \
+    --width=400 \
+    --height=200 \
+    --field="Disk Image Path:":file \
+    --field="Mount Point:":DIR \
+    --field="Partition to Mount:": \
+    "$1" "$2" "$3"
+}
+
+# Show the YAD form and save the entered values to variables
+yad_result=$(yad_form)
+
+# Parse the entered values
+image_path=$(echo "${yad_result}" | awk -F '|' '{print $1}')
+mount_point=$(echo "${yad_result}" | awk -F '|' '{print $2}')
+mount_part=$(echo "${yad_result}" | awk -F '|' '{print $3}')
+
+# Create the mount point directory if it doesn't exist
+if [ ! -d "${mount_point}" ]; then
+    echo "Creating mount point directory: ${mount_point}"
+    sudo mkdir -p "${mount_point}"
+fi
+
+# Mount the disk image at the specified mount point
+sudo guestmount -a "${image_path}" -m "${mount_part}" "${mount_point}"
+
+# Verify that the disk image was mounted successfully
+if [ $? -eq 0 ]; then
+    yad --title="Mount Disk Image" \
+    --width=300 \
+    --height=100 \
+    --text="Disk image mounted successfully at: ${mount_point}"
+else
+    yad --title="Mount Disk Image" \
+    --width=300 \
+    --height=100 \
+    --text="Failed to mount disk image at: ${mount_point}"
+fi

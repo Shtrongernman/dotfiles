@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Prompt the user to enter the path of the disk image and mount point
+read -p "Enter the path of the disk image: " image_path
+read -p "Enter the mount point for the disk image: " mount_point
+read -p "Enter partition that you want to mount: " mount_part
+
+# Create the mount point directory if it doesn't exist
+if [ ! -d "${mount_point}" ]; then
+    echo "Creating mount point directory: ${mount_point}"
+    sudo mkdir -p "${mount_point}"
+fi
+
+# Mount the disk image at the specified mount point
+sudo guestmount -a "${image_path}" -m "${mount_part}" "${mount_point}"
+
+# Verify that the disk image was mounted successfully
+if [ $? -eq 0 ]; then
+    echo "Disk image mounted successfully at: ${mount_point}"
+else
+    echo "Failed to mount disk image at: ${mount_point}"
+fi
